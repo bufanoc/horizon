@@ -1,0 +1,89 @@
+{% load i18n %}
+
+<div class="well">
+  <h4>{% trans "Load Balancer Configuration Guide" %}</h4>
+  
+  <h5>{% trans "Common Configurations" %}</h5>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h6 class="panel-title">{% trans "Web Server Load Balancing" %}</h6>
+    </div>
+    <div class="panel-body">
+      <pre>
+Name: web-frontend
+Protocol: TCP
+VIP: 192.168.1.100:80
+Members:
+  - 10.0.0.10:8080  # Web Server 1
+  - 10.0.0.11:8080  # Web Server 2
+  - 10.0.0.12:8080  # Web Server 3</pre>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h6 class="panel-title">{% trans "Database Load Balancing" %}</h6>
+    </div>
+    <div class="panel-body">
+      <pre>
+Name: db-cluster
+Protocol: TCP
+VIP: 192.168.1.200:5432
+Members:
+  - 10.0.0.20:5432  # Primary DB
+  - 10.0.0.21:5432  # Secondary DB</pre>
+    </div>
+  </div>
+
+  <h5>{% trans "Components" %}</h5>
+  <dl>
+    <dt>{% trans "VIP (Virtual IP)" %}</dt>
+    <dd>{% trans "The address clients connect to" %}</dd>
+    
+    <dt>{% trans "Protocol" %}</dt>
+    <dd>{% trans "TCP for most applications, UDP for DNS/streaming" %}</dd>
+    
+    <dt>{% trans "Members" %}</dt>
+    <dd>{% trans "Backend servers that handle the actual traffic" %}</dd>
+  </dl>
+
+  <h5>{% trans "Best Practices" %}</h5>
+  <ul>
+    <li>{% trans "Ensure all members are in the same network" %}</li>
+    <li>{% trans "Use consistent port numbers when possible" %}</li>
+    <li>{% trans "Monitor member health status" %}</li>
+    <li>{% trans "Plan for maintenance windows" %}</li>
+  </ul>
+
+  <h5>{% trans "Common Issues" %}</h5>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>{% trans "Issue" %}</th>
+        <th>{% trans "Solution" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{% trans "Members unreachable" %}</td>
+        <td>{% trans "Check network connectivity and security groups" %}</td>
+      </tr>
+      <tr>
+        <td>{% trans "Uneven traffic distribution" %}</td>
+        <td>{% trans "Verify member health and capacity" %}</td>
+      </tr>
+      <tr>
+        <td>{% trans "Connection failures" %}</td>
+        <td>{% trans "Confirm port configurations and service status" %}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h5>{% trans "Tips" %}</h5>
+  <ul>
+    <li>{% trans "Start with a small number of members" %}</li>
+    <li>{% trans "Test thoroughly before production" %}</li>
+    <li>{% trans "Document your configuration" %}</li>
+    <li>{% trans "Monitor performance metrics" %}</li>
+  </ul>
+</div>

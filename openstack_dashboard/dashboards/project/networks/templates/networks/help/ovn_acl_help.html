@@ -1,0 +1,70 @@
+{% load i18n %}
+
+<div class="well">
+  <h4>{% trans "ACL Match Expression Examples" %}</h4>
+  
+  <h5>{% trans "Common Patterns" %}</h5>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>{% trans "Purpose" %}</th>
+        <th>{% trans "Match Expression" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{% trans "Allow HTTP from subnet" %}</td>
+        <td><code>ip4.src==10.0.0.0/24 && tcp.dst==80</code></td>
+      </tr>
+      <tr>
+        <td>{% trans "Allow SSH access" %}</td>
+        <td><code>ip4.src==192.168.1.0/24 && tcp.dst==22</code></td>
+      </tr>
+      <tr>
+        <td>{% trans "Block SMTP" %}</td>
+        <td><code>tcp.dst==25</code></td>
+      </tr>
+      <tr>
+        <td>{% trans "Allow DNS queries" %}</td>
+        <td><code>udp.dst==53</code></td>
+      </tr>
+      <tr>
+        <td>{% trans "Match specific MAC" %}</td>
+        <td><code>eth.src==00:00:00:00:00:01</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h5>{% trans "Match Fields" %}</h5>
+  <ul>
+    <li><code>ip4.src</code>, <code>ip4.dst</code>: {% trans "IPv4 source/destination" %}</li>
+    <li><code>ip6.src</code>, <code>ip6.dst</code>: {% trans "IPv6 source/destination" %}</li>
+    <li><code>tcp.src</code>, <code>tcp.dst</code>: {% trans "TCP source/destination ports" %}</li>
+    <li><code>udp.src</code>, <code>udp.dst</code>: {% trans "UDP source/destination ports" %}</li>
+    <li><code>eth.src</code>, <code>eth.dst</code>: {% trans "Ethernet source/destination MAC" %}</li>
+  </ul>
+
+  <h5>{% trans "Operators" %}</h5>
+  <ul>
+    <li><code>==</code>: {% trans "Equals" %}</li>
+    <li><code>!=</code>: {% trans "Not equals" %}</li>
+    <li><code>&&</code>: {% trans "Logical AND" %}</li>
+    <li><code>||</code>: {% trans "Logical OR" %}</li>
+  </ul>
+
+  <h5>{% trans "Priority Guidelines" %}</h5>
+  <ul>
+    <li>32000-32767: {% trans "Emergency rules" %}</li>
+    <li>31000-31999: {% trans "Security group rules" %}</li>
+    <li>25000-30999: {% trans "User-defined rules" %}</li>
+    <li>0-24999: {% trans "Default rules" %}</li>
+  </ul>
+
+  <h5>{% trans "Tips" %}</h5>
+  <ul>
+    <li>{% trans "Higher priority rules are evaluated first" %}</li>
+    <li>{% trans "Use logging for troubleshooting" %}</li>
+    <li>{% trans "Be specific with match conditions" %}</li>
+    <li>{% trans "Document your rules" %}</li>
+  </ul>
+</div>
