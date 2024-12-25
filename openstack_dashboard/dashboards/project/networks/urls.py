@@ -24,7 +24,7 @@ from openstack_dashboard.dashboards.project.networks.subnets \
 from openstack_dashboard.dashboards.project.networks.subnets \
     import views as subnet_views
 from openstack_dashboard.dashboards.project.networks import views
-
+from openstack_dashboard.dashboards.project.networks import ovn_views
 
 NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
 
@@ -32,6 +32,9 @@ NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
 urlpatterns = [
     re_path(r'^$', views.IndexView.as_view(), name='index'),
     re_path(r'^create$', views.CreateView.as_view(), name='create'),
+    re_path(r'^create_ovn$', ovn_views.CreateOVNNetworkView.as_view(), name='create_ovn'),
+    re_path(NETWORKS % 'update', views.UpdateView.as_view(), name='update'),
+    re_path(NETWORKS % 'update_ovn', ovn_views.UpdateOVNNetworkView.as_view(), name='update_ovn'),
     re_path(NETWORKS % r'detail(\?tab=network_tabs__overview)?$',
             views.DetailView.as_view(),
             name='detail'),
@@ -39,7 +42,6 @@ urlpatterns = [
             views.DetailView.as_view(), name='ports_tab'),
     re_path(NETWORKS % r'detail\?tab=network_tabs__subnets_tab$',
             views.DetailView.as_view(), name='subnets_tab'),
-    re_path(NETWORKS % 'update', views.UpdateView.as_view(), name='update'),
     re_path(NETWORKS % 'subnets/create', subnet_views.CreateView.as_view(),
             name='createsubnet'),
     re_path(NETWORKS % 'ports/create',

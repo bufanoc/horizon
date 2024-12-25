@@ -1,0 +1,21 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+
+{% block modal-body-right %}
+  <h3>{% trans "Description:" %}</h3>
+  <p>{% trans "Update OVN network settings and configurations." %}</p>
+  
+  <h3>{% trans "Network Settings:" %}</h3>
+  <ul>
+    <li>{% trans "Port Security: Enable or disable security groups and anti-spoofing rules" %}</li>
+    <li>{% trans "DHCP Options: Configure network-wide DHCP settings" %}</li>
+    <li>{% trans "Admin State: Enable or disable the network" %}</li>
+    <li>{% trans "Shared: Make the network available to other projects" %}</li>
+  </ul>
+  
+  <h3>{% trans "Notes:" %}</h3>
+  <ul>
+    <li>{% trans "Changes to network settings may temporarily disrupt network connectivity" %}</li>
+    <li>{% trans "DHCP changes will affect all instances using this network" %}</li>
+  </ul>
+{% endblock %}

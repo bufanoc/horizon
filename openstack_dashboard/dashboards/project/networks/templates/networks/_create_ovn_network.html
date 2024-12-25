@@ -1,0 +1,23 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+
+{% block modal-body-right %}
+  <h3>{% trans "Description:" %}</h3>
+  <p>{% trans "Create a new OVN network with advanced networking features." %}</p>
+  
+  <h3>{% trans "Network Type:" %}</h3>
+  <p>{% trans "OVN (Open Virtual Network) provides advanced networking capabilities:" %}</p>
+  <ul>
+    <li>{% trans "Distributed logical routing" %}</li>
+    <li>{% trans "Distributed firewall" %}</li>
+    <li>{% trans "L2/L3 security groups" %}</li>
+    <li>{% trans "DHCP services" %}</li>
+  </ul>
+  
+  <h3>{% trans "Notes:" %}</h3>
+  <ul>
+    <li>{% trans "If Logical Switch Name is not specified, the network name will be used." %}</li>
+    <li>{% trans "DHCP options should be specified in key=value format, one per line." %}</li>
+    <li>{% trans "Port security enables security groups and anti-spoofing rules." %}</li>
+  </ul>
+{% endblock %}

@@ -102,6 +102,15 @@ class CreateNetwork(tables.LinkAction):
         return True
 
 
+class CreateOVNNetwork(tables.LinkAction):
+    name = "create_ovn"
+    verbose_name = _("Create OVN Network")
+    url = "horizon:project:networks:create_ovn"
+    classes = ("ajax-modal",)
+    icon = "plus"
+    policy_rules = (("network", "create_network"),)
+
+
 class EditNetwork(policy.PolicyTargetMixin, tables.LinkAction):
     name = "update"
     verbose_name = _("Edit Network")
@@ -114,6 +123,19 @@ class EditNetwork(policy.PolicyTargetMixin, tables.LinkAction):
         if datum and datum.id == api.neutron.AUTO_ALLOCATE_ID:
             return False
         return True
+
+
+class UpdateOVNNetwork(tables.LinkAction):
+    name = "update_ovn"
+    verbose_name = _("Update OVN Network")
+    url = "horizon:project:networks:update_ovn"
+    classes = ("ajax-modal",)
+    icon = "pencil"
+    policy_rules = (("network", "update_network"),)
+
+    def allowed(self, request, network):
+        # Only show this action for OVN networks
+        return hasattr(network, 'ovn_info')
 
 
 class CreateSubnet(subnet_tables.SubnetPolicyTargetMixin, tables.LinkAction):
@@ -189,19 +211,23 @@ class ProjectNetworksFilterAction(tables.FilterAction):
 
 class NetworksTable(tables.DataTable):
     name = tables.WrappingColumn("name_or_id",
-                                 verbose_name=_("Name"),
-                                 link=get_network_link)
+                               verbose_name=_("Name"),
+                               link="horizon:project:networks:detail")
     subnets = tables.Column(get_subnets,
-                            verbose_name=_("Subnets Associated"),)
-    shared = tables.Column("is_shared", verbose_name=_("Shared"),
-                           filters=(filters.yesno, filters.capfirst))
-    external = tables.Column("is_router_external", verbose_name=_("External"),
-                             filters=(filters.yesno, filters.capfirst))
-    status = tables.Column("status", verbose_name=_("Status"),
-                           display_choices=STATUS_DISPLAY_CHOICES)
-    admin_state = tables.Column("is_admin_state_up",
-                                verbose_name=_("Admin State"),
-                                display_choices=DISPLAY_CHOICES)
+                          verbose_name=_("Subnets Associated"),
+                          wrap_list=True,
+                          filters=(filters.unordered_list,))
+    shared = tables.Column("shared",
+                         verbose_name=_("Shared"),
+                         filters=(filters.yesno, filters.capfirst))
+    external = tables.Column("router:external",
+                          verbose_name=_("External"),
+                          filters=(filters.yesno, filters.capfirst))
+    status = tables.Column("status",
+                         verbose_name=_("Status"),
+                         filters=(filters.title,))
+    admin_state = tables.Column("admin_state",
+                              verbose_name=_("Admin State"))
     availability_zones = tables.Column(get_availability_zones,
                                        verbose_name=_("Availability Zones"))
 
@@ -224,6 +250,11 @@ class NetworksTable(tables.DataTable):
     class Meta(object):
         name = "networks"
         verbose_name = _("Networks")
-        table_actions = (CreateNetwork, DeleteNetwork,
-                         ProjectNetworksFilterAction)
-        row_actions = (EditNetwork, CreateSubnet, DeleteNetwork)
+        table_actions = (CreateNetwork,
+                        CreateOVNNetwork,
+                        DeleteNetwork,
+                        ProjectNetworksFilterAction)
+        row_actions = (EditNetwork,
+                      UpdateOVNNetwork,
+                      CreateSubnet,
+                      DeleteNetwork)
