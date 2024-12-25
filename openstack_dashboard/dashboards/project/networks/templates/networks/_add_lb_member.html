@@ -1,0 +1,20 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+
+{% block modal-body-right %}
+  <h3>{% trans "Description:" %}</h3>
+  <p>{% trans "Add a new member to the load balancer pool." %}</p>
+  
+  <h3>{% trans "Member Configuration:" %}</h3>
+  <ul>
+    <li>{% trans "IP Address: The instance's private IP address" %}</li>
+    <li>{% trans "Port: The port number the application is listening on" %}</li>
+  </ul>
+  
+  <h3>{% trans "Notes:" %}</h3>
+  <ul>
+    <li>{% trans "The member must be reachable from the network" %}</li>
+    <li>{% trans "The port must match the application's listening port" %}</li>
+    <li>{% trans "Health checks will begin immediately after adding" %}</li>
+  </ul>
+{% endblock %}

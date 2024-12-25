@@ -1,0 +1,29 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+
+{% block modal-body-right %}
+  <h3>{% trans "Description:" %}</h3>
+  <p>{% trans "Create a load balancer to distribute traffic across multiple instances." %}</p>
+  
+  <h3>{% trans "Load Balancer Components:" %}</h3>
+  <ul>
+    <li>{% trans "VIP (Virtual IP): The address clients will connect to" %}</li>
+    <li>{% trans "Protocol: TCP or UDP for traffic handling" %}</li>
+    <li>{% trans "Members: The backend instances that will receive traffic" %}</li>
+  </ul>
+  
+  <h3>{% trans "Member Format:" %}</h3>
+  <p>{% trans "Add members one per line in the format:" %}</p>
+  <pre>IP_ADDRESS:PORT</pre>
+  <p>{% trans "Example:" %}</p>
+  <pre>10.0.0.10:80
+10.0.0.11:80
+10.0.0.12:80</pre>
+  
+  <h3>{% trans "Notes:" %}</h3>
+  <ul>
+    <li>{% trans "Members must be reachable from the network" %}</li>
+    <li>{% trans "Health checks are performed automatically" %}</li>
+    <li>{% trans "Traffic is distributed using round-robin by default" %}</li>
+  </ul>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+
+{% block modal-body-right %}
+  <h3>{% trans "Description:" %}</h3>
+  <p>{% trans "Create an Access Control List (ACL) rule for your OVN network." %}</p>
+  
+  <h3>{% trans "Match Expression Examples:" %}</h3>
+  <ul>
+    <li><code>ip4.src==10.0.0.0/24 && tcp.dst==80</code>: {% trans "Match HTTP traffic from subnet" %}</li>
+    <li><code>ip.src==$ipv4_addr && tcp.dst==22</code>: {% trans "Match SSH traffic from specific IP" %}</li>
+    <li><code>ip4.dst==10.0.0.1 && udp.dst==53</code>: {% trans "Match DNS traffic to specific server" %}</li>
+  </ul>
+  
+  <h3>{% trans "Actions:" %}</h3>
+  <ul>
+    <li>{% trans "Allow: Permit matching traffic" %}</li>
+    <li>{% trans "Allow-Related: Permit traffic and related connections (e.g., return traffic)" %}</li>
+    <li>{% trans "Drop: Silently discard matching traffic" %}</li>
+    <li>{% trans "Reject: Discard traffic and send rejection notification" %}</li>
+  </ul>
+  
+  <h3>{% trans "Notes:" %}</h3>
+  <ul>
+    <li>{% trans "Higher priority rules are evaluated first" %}</li>
+    <li>{% trans "Enable logging to track rule matches in system logs" %}</li>
+  </ul>
+{% endblock %}

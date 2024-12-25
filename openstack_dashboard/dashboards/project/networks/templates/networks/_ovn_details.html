@@ -1,53 +1,114 @@
 {% load i18n %}
 
-<div class="info detail">
+<div class="detail">
   <h4>{% trans "OVN Network Details" %}</h4>
   
+  <hr class="header_rule">
   <dl class="dl-horizontal">
     <dt>{% trans "Logical Switch" %}</dt>
-    <dd>{{ network.ovn_info.logical_switch|default:_("-") }}</dd>
+    <dd>{{ network.ovn_info.logical_switch|default:"-" }}</dd>
     
     <dt>{% trans "Network Type" %}</dt>
-    <dd>{{ network.ovn_info.network_type|default:_("-") }}</dd>
+    <dd>{{ network.ovn_info.network_type|default:"-" }}</dd>
     
     <dt>{% trans "Port Security" %}</dt>
     <dd>{{ network.ovn_info.port_security_enabled|yesno|capfirst }}</dd>
-    
-    <dt>{% trans "DHCP Options" %}</dt>
-    <dd>
-      {% if network.ovn_info.dhcp_options %}
-        <ul>
-          {% for option in network.ovn_info.dhcp_options %}
-            <li>{{ option.key }}: {{ option.value }}</li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        {% trans "-" %}
-      {% endif %}
-    </dd>
   </dl>
 
-  {% if network.ovn_info.acls %}
-  <h4>{% trans "Access Control Lists" %}</h4>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>{% trans "Direction" %}</th>
-        <th>{% trans "Priority" %}</th>
-        <th>{% trans "Match" %}</th>
-        <th>{% trans "Action" %}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for acl in network.ovn_info.acls %}
-      <tr>
-        <td>{{ acl.direction }}</td>
-        <td>{{ acl.priority }}</td>
-        <td>{{ acl.match }}</td>
-        <td>{{ acl.action }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% if network.ovn_info.dhcp_options %}
+  <h4>{% trans "DHCP Options" %}</h4>
+  <hr class="header_rule">
+  <dl class="dl-horizontal">
+    {% for key, value in network.ovn_info.dhcp_options.items %}
+    <dt>{{ key }}</dt>
+    <dd>{{ value }}</dd>
+    {% endfor %}
+  </dl>
   {% endif %}
+
+  <h4>{% trans "Access Control Lists" %}</h4>
+  <hr class="header_rule">
+  {% if network.ovn_info.acls %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>{% trans "Direction" %}</th>
+          <th>{% trans "Priority" %}</th>
+          <th>{% trans "Match" %}</th>
+          <th>{% trans "Action" %}</th>
+          <th>{% trans "Log" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for acl in network.ovn_info.acls %}
+        <tr>
+          <td>{{ acl.direction }}</td>
+          <td>{{ acl.priority }}</td>
+          <td><code>{{ acl.match }}</code></td>
+          <td>{{ acl.action }}</td>
+          <td>{{ acl.log|yesno:"Yes,No" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>{% trans "No ACL rules configured." %}</p>
+  {% endif %}
+  
+  <div class="btn-group">
+    <a href="{% url 'horizon:project:networks:create_acl' network.id %}"
+       class="btn btn-default">
+      {% trans "Add Rule" %}
+    </a>
+  </div>
+
+  <h4>{% trans "Load Balancers" %}</h4>
+  <hr class="header_rule">
+  {% if network.ovn_info.load_balancers %}
+    {% for lb in network.ovn_info.load_balancers %}
+    <div class="well">
+      <h5>{{ lb.name }}</h5>
+      <dl class="dl-horizontal">
+        <dt>{% trans "VIP" %}</dt>
+        <dd>{{ lb.vip }}</dd>
+        
+        <dt>{% trans "Protocol" %}</dt>
+        <dd>{{ lb.protocol }}</dd>
+        
+        <dt>{% trans "Status" %}</dt>
+        <dd>{{ lb.status }}</dd>
+        
+        <dt>{% trans "Admin State" %}</dt>
+        <dd>{{ lb.admin_state_up|yesno|capfirst }}</dd>
+      </dl>
+      
+      {% if lb.members %}
+      <h6>{% trans "Members" %}</h6>
+      <ul>
+        {% for member in lb.members %}
+        <li>{{ member }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>{% trans "No members configured." %}</p>
+      {% endif %}
+      
+      <div class="btn-group">
+        <a href="{% url 'horizon:project:networks:add_lb_member' network.id lb.id %}"
+           class="btn btn-default btn-sm">
+          {% trans "Add Member" %}
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p>{% trans "No load balancers configured." %}</p>
+  {% endif %}
+  
+  <div class="btn-group">
+    <a href="{% url 'horizon:project:networks:create_lb' network.id %}"
+       class="btn btn-default">
+      {% trans "Create Load Balancer" %}
+    </a>
+  </div>
 </div>
