@@ -64,7 +64,17 @@ class OverviewTab(tabs.Tab):
         return context
 
 
+class OVNTab(tabs.Tab):
+    name = _("OVN")
+    slug = "ovn"
+    template_name = "project/networks/_ovn_details.html"
+
+    def get_context_data(self, request):
+        network = self.tab_group.kwargs['network']
+        return {'network': network}
+
+
 class NetworkDetailsTabs(tabs.DetailTabsGroup):
     slug = "network_tabs"
-    tabs = (OverviewTab, subnets_tabs.SubnetsTab, ports_tabs.PortsTab, )
+    tabs = (OverviewTab, subnets_tabs.SubnetsTab, ports_tabs.PortsTab, OVNTab)
     sticky = True

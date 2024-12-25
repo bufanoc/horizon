@@ -22,7 +22,6 @@ import netaddr
 
 from horizon import exceptions
 from horizon import forms
-from horizon import messages
 from horizon import workflows
 
 from openstack_dashboard import api
@@ -462,16 +461,91 @@ class CreateSubnetDetail(workflows.Step):
                    "dns_nameservers", "host_routes")
 
 
+class CreateOVNInfoAction(workflows.Action):
+    logical_switch = forms.CharField(
+        max_length=255,
+        label=_("Logical Switch Name"),
+        required=False,
+        help_text=_("Name for the OVN logical switch. If left empty, "
+                   "the network name will be used."))
+    
+    port_security_enabled = forms.BooleanField(
+        label=_("Enable Port Security"),
+        initial=True,
+        required=False,
+        help_text=_("Enable security groups and port security on this network"))
+    
+    dhcp_options = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        label=_("DHCP Options"),
+        required=False,
+        help_text=_("Enter DHCP options in key=value format, one per line. "
+                   "Example: router=192.168.1.1"))
+
+    class Meta(object):
+        name = _("OVN Configuration")
+        help_text = _("Configure OVN-specific network settings.")
+
+
+class CreateOVNInfo(workflows.Step):
+    action_class = CreateOVNInfoAction
+    depends_on = ("network_id",)
+    contributes = ("logical_switch", "port_security_enabled", "dhcp_options")
+
+    def contribute(self, data, context):
+        if data:
+            context['logical_switch'] = data.get('logical_switch', '')
+            context['port_security_enabled'] = data.get('port_security_enabled', True)
+            context['dhcp_options'] = data.get('dhcp_options', '')
+        return context
+
+
 class CreateNetwork(workflows.Workflow):
     slug = "create_network"
     name = _("Create Network")
     finalize_button_name = _("Create")
     success_message = _('Created network "%s".')
     failure_message = _('Unable to create network "%s".')
-    default_steps = (CreateNetworkInfo,
-                     CreateSubnetInfo,
-                     CreateSubnetDetail)
-    wizard = True
+    default_steps = (CreateNetworkInfo, CreateSubnetInfo, CreateOVNInfo)
+
+    def handle(self, request, context):
+        try:
+            params = {
+                'name': context['net_name'],
+                'admin_state_up': context['admin_state'],
+                'shared': context['shared'],
+                'port_security_enabled': context.get('port_security_enabled', True)
+            }
+
+            if context.get('logical_switch'):
+                params['logical_switch'] = context['logical_switch']
+
+            if context.get('dhcp_options'):
+                dhcp_opts = {}
+                for line in context['dhcp_options'].split('\n'):
+                    if '=' in line:
+                        key, value = line.strip().split('=', 1)
+                        dhcp_opts[key.strip()] = value.strip()
+                params['dhcp_options'] = dhcp_opts
+
+            network = api.neutron.network_create(request, **params)
+            
+            # If subnet data is present, create subnet
+            if context['with_subnet']:
+                subnet_params = {
+                    'network_id': network.id,
+                    'name': context['subnet_name'],
+                    'cidr': context['cidr'],
+                    'ip_version': int(context['ip_version']),
+                    'gateway_ip': context['gateway_ip'],
+                    'enable_dhcp': context['enable_dhcp']
+                }
+                api.neutron.subnet_create(request, **subnet_params)
+            
+            return True
+        except Exception:
+            exceptions.handle(request, _('Unable to create network.'))
+            return False
 
     def get_success_url(self):
         return reverse("horizon:project:networks:index")
